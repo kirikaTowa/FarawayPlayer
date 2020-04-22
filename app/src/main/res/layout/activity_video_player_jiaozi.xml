@@ -4,15 +4,47 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent" >
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="200dp">
+
         <cn.jzvd.JzvdStd
                 android:id="@+id/jz_video"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"/>
-    </LinearLayout>
 
+    <RadioGroup
+            android:id="@+id/rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:orientation="horizontal">
 
+        <RadioButton
+                android:id="@+id/rb1"
+                android:checked="true"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/mv_description"
+                android:button="@null"/>
+
+        <RadioButton
+                android:id="@+id/rb2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/mv_comment"
+                android:button="@null"/>
+
+        <RadioButton
+                android:id="@+id/rb3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/mv_relative"
+                android:button="@null"/>
+    </RadioGroup>
+    <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewpagerjz"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
 </LinearLayout>

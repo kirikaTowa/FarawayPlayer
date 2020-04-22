@@ -16,19 +16,21 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 
-import android.view.View
-import android.widget.Button
-
 
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Build
 import android.util.Log
+import android.view.ViewParent
 import android.widget.Toast
+import androidx.viewpager.widget.ViewPager
 import cn.jzvd.JzvdStd
 
 import kotlinx.android.synthetic.main.activity_video_player_jiaozi.*
 import cn.jzvd.Jzvd
+import com.ywjh.farawayplayer.adapter.VideoPagerAdapter
+import kotlinx.android.synthetic.main.fragment_mv.*
+import org.jetbrains.anko.radioGroup
 
 
 class JiaoZiVideoPlayerActivity:BaseActivity() {
@@ -87,7 +89,7 @@ class JiaoZiVideoPlayerActivity:BaseActivity() {
             }
 
         }
-        println("1111111111播放地址"+data.toString())
+
 
         val videoPlayerBean= intent.getParcelableExtra<VideoPlayBean>("item")
 
@@ -106,10 +108,42 @@ class JiaoZiVideoPlayerActivity:BaseActivity() {
         Jzvd.releaseAllVideos()//释放资源
     }
 
+    override fun initListener() {
+        //适配viewpagert 需要adapter 创建ViewPagerAdapter
+        viewpagerjz.adapter=VideoPagerAdapter(supportFragmentManager)
+        rg.setOnCheckedChangeListener{
+            radioGroup,i->
+            when(i){
+                R.id.rb1 ->viewpagerjz.setCurrentItem(0)
+                R.id.rb2 ->viewpagerjz.setCurrentItem(1)
+                R.id.rb3 ->viewpagerjz.setCurrentItem(2)
+            }
+        }
+       //viewpager选中设置监听  有三个方法不能直接打开 内部类实现
+        viewpagerjz.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
+
+          //滑动(左右)状态 改变的回调
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+            //滑动的回调
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
+            //滑动状态改变 选中状态改变 做滑动下面 同步更改上面
+            override fun onPageSelected(position: Int) {
+
+                when(position){
+                    0->rg.check(R.id.rb1)
+                    1->rg.check(R.id.rb2)
+                    2->rg.check(R.id.rb3)
+                }
+            }
 
 
+        })
     }
 
+
+}
 
 
 
