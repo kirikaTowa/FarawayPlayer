@@ -66,6 +66,7 @@
                     <data android:mimeType="video/3gpp2"/>
             </intent-filter>
         </activity>
+        <service android:name=".service.AudioService"/>
     </application>
 
 </manifest>

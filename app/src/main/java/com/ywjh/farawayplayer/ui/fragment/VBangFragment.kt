@@ -49,9 +49,10 @@ class VBangFragment: BaseFragment() {
     }
 
     override fun initData() {
+
+        handlePermission()
         loadSongs()
         //动态权限申请 处理权限问题
-        handlePermission()
 
     }
     /*
@@ -81,8 +82,8 @@ class VBangFragment: BaseFragment() {
 
     private fun myRequsetPerssion() {
         //真正申请权限
-        val permission= arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-        requestPermissions(permission,1)
+        val permissions= arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        requestPermissions(permissions,1)
     }
 /*
 * 接收权限授权结果
