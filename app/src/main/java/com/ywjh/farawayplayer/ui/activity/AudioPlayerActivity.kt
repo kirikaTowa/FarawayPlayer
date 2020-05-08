@@ -10,8 +10,10 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Message
 import android.view.View
+import android.widget.AdapterView
 import android.widget.SeekBar
 import com.ywjh.farawayplayer.R
+import com.ywjh.farawayplayer.adapter.PopAdapter
 import com.ywjh.farawayplayer.base.BaseActivity
 import com.ywjh.farawayplayer.model.AudioBean
 import com.ywjh.farawayplayer.service.AudioService
@@ -23,7 +25,14 @@ import kotlinx.android.synthetic.main.activity_music_player_bottom.*
 import kotlinx.android.synthetic.main.activity_music_player_middle.*
 import kotlinx.android.synthetic.main.activity_music_player_top.*
 
-class AudioPlayerActivity:BaseActivity(), View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+class AudioPlayerActivity:BaseActivity(), View.OnClickListener, SeekBar.OnSeekBarChangeListener,
+    AdapterView.OnItemClickListener {
+    //弹出的播放列表点击事件
+    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        //播放当前歌曲
+        iService?.playPosition(position)
+    }
+
     //进度一改变就回调  改变后进度和ture//用户手指改变 false代码式改变
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         //侦测用户操作侦测
@@ -68,11 +77,18 @@ class AudioPlayerActivity:BaseActivity(), View.OnClickListener, SeekBar.OnSeekBa
     }
     //显示界面的代码
     private fun showPlayList() {
-        //获取底部高度
-        val bottomH=audio_player_bottom.height
-        //println("111111111111111111111+"+bottomH)
-        val popWindow=PlayListPopWindow(this)
-        popWindow.showAsDropDown(audio_player_bottom,100,bottomH)//相对位置 x和y值
+
+        val list=iService?.getPlayList()
+        list?.let {
+            val adapter=PopAdapter(list)
+
+            //获取底部高度
+            val bottomH=audio_player_bottom.height
+            //println("111111111111111111111+"+bottomH)
+            val popWindow=PlayListPopWindow(this,adapter,this,window)
+            popWindow.showAsDropDown(audio_player_bottom,0,bottomH)//相对位置 x和y值
+        }
+
     }
 
     //更新播放模式
@@ -145,7 +161,7 @@ class AudioPlayerActivity:BaseActivity(), View.OnClickListener, SeekBar.OnSeekBa
     //更新播放状态暂停与播放转换
     private fun updatePlayState() {
         //更新状态(用到绑定服务的Iservice) 功能性操作
-        iService?.updataPlayState()
+        iService?.updatePlayState()
         //更新图标  界面性操作要分开 这样便于复用
         //更新播放状态按钮 通过updatePlayStateButton//功能性和界面性分开的好处
         updatePlayStateBtn()
