@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.ywjh.farawayplayer.R
 import com.ywjh.farawayplayer.model.LyricBean
+import java.time.OffsetTime
 
 //自定义歌词view
 class LyricView: View {
@@ -22,6 +23,8 @@ class LyricView: View {
     var white=0
     var green=0
     var lineHeight=0
+    var duration=0
+    var progress=0
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -48,13 +51,32 @@ class LyricView: View {
     }
 
     private fun drawMutieLine(canvas: Canvas?) {
+        //求居中行偏移量y
+        //1.行可用时间
+        var lineTime=0
+        //最后一行居中
+        if (centerLine==list.size-1){
+        //可用时间=duration-最后一行开始时间
+            lineTime=duration-list.get(centerLine).startTime
+        }else{
+            //其他行居中
+            val centerS =list.get(centerLine).startTime
+            val nextS=list.get(centerLine+1).startTime
+            lineTime=nextS-centerS
+        }
+        //2.求偏移时间=progress-居中
+        val offsetTime=progress-list.get(centerLine).startTime
+        //3.偏移百分比=偏移时间/行可用时间
+        val offsetPercent:Float=offsetTime/(lineTime.toFloat())
+        //4.偏移y
+        val offsetY=offsetPercent*lineHeight
 
         val centerText=list.get(centerLine).content//拿到居中行文本
         val bounds = Rect()//传递指针，拿到数据
         paint.getTextBounds(centerText, 0, centerText.length, bounds)
         //求居中行y值
         val textH = bounds.height()
-        val centerY=viewH/2+textH/2
+        val centerY=viewH/2+textH/2-offsetY
         for ((index,value)in list.withIndex()){
             if(index==centerLine){
                 paint.color=green
@@ -104,5 +126,39 @@ class LyricView: View {
         super.onSizeChanged(w, h, oldw, oldh)
         viewW=w
         viewH=h
+    }
+
+    fun updateProgress(progress:Int){
+        this.progress=progress
+        //获取居中行行号
+        //进度大于最后一行的开始时间
+        if(progress>=list.get(list.size-1).startTime){
+            //最后一行居中
+            centerLine=list.size-1
+        }else{
+            //其他行居中的话 循环遍历集合  找到居中行
+            for(index in 0 until list.size-1){//最大到-2 看下until范围左闭有开
+                //progress>=当前行开始时间&&<下一行开始时间
+                val curStartTime=list.get(index).startTime
+                val nextStartTime=list.get(index+1).startTime
+                if (progress>=curStartTime && progress<nextStartTime){
+                    centerLine=index
+                    break
+                }
+            }
+        }
+        //找到居中行后，绘制多行歌词 重新调用ondraw方法
+        /*
+        * invalidate()执行ondraw，宽度变化不管   只会改变内容，条目控件的绘制
+        *postInvalidate() ondraw方法，可在子线程刷新
+        * requestLayout //view布局(宽度和高度)参数个改变时刷新 重新绘制
+        * */
+        invalidate()
+
+    }
+    //设置当前总时长
+
+    fun setSongDuration(duration:Int){
+        this.duration=duration
     }
 }

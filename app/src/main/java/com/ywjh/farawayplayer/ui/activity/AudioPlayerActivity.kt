@@ -131,6 +131,7 @@ class AudioPlayerActivity:BaseActivity(), View.OnClickListener, SeekBar.OnSeekBa
         //drawable?.stop()
         //更新播放进度 总进度与计时，进度条  后面会用到，提出去
         duration=iService?.getDuration()?:0
+        lyricView.setSongDuration(duration)
         //进度条设置进度最大值
         progress_sk.max=duration
         startUpadateProgress()
@@ -148,7 +149,7 @@ class AudioPlayerActivity:BaseActivity(), View.OnClickListener, SeekBar.OnSeekBa
         updateProgress(progress)
     }
         //定时获取进度 通过handler
-        handler.sendEmptyMessageDelayed(MSG_PROGRESS,1000)//发送空消息并有一定的延时
+        handler.sendEmptyMessage(MSG_PROGRESS)//发送空消息并有一定的延时
     }
 
     private fun updateProgress(pro: Int) {
@@ -156,6 +157,8 @@ class AudioPlayerActivity:BaseActivity(), View.OnClickListener, SeekBar.OnSeekBa
         progress.text = StringUtil.parseDuration(pro)+"/"+ StringUtil.parseDuration(duration)
         //更新进度条
         progress_sk.setProgress(pro)
+        //更新歌词
+        lyricView.updateProgress(pro)
     }
 
     //更新播放状态暂停与播放转换
@@ -273,4 +276,7 @@ class AudioPlayerActivity:BaseActivity(), View.OnClickListener, SeekBar.OnSeekBa
         //清空handler发送的所有消息以及回调
         handler.removeCallbacksAndMessages(null)
     }
+
+
+
 }
